@@ -25,12 +25,12 @@ Copyright 2017-2020 JellyWare Inc. All Rights Reserved.
     <div class="container">
       <div class="title margin">
         <p id="title">BlueJelly Sample</p>
-        <p id="subtitle">WriteでUART送信</p>
+        <p id="subtitle">ConnectとUUID</p>
       </div>
 
       <div class="contents margin">
-        <input id="write_value" class="button" value="up" size="20" />
-        <button id="write" class="button">Write</button>
+        <button id="scan" class="button">Scan</button>
+        <button id="connect" class="button">Connect</button>
         <hr />
         <div id="device_name"></div>
         <div id="uuid_name"></div>
@@ -60,8 +60,8 @@ Copyright 2017-2020 JellyWare Inc. All Rights Reserved.
         //UUIDの設定
         ble.setUUID(
           "UUID1",
-          "6E400001-B5A3-F393-E0A9-E50E24DCCA9E",
-          "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+          BlueJelly.MICROBIT_UART_SERVICE,
+          BlueJelly.MICROBIT_TX_CHARACTERISTIC
         );
       };
 
@@ -83,25 +83,15 @@ Copyright 2017-2020 JellyWare Inc. All Rights Reserved.
         document.getElementById("status").innerHTML = "connected GATT!";
       };
 
-      //--------------------------------------------------
-      //Write後の処理
-      //--------------------------------------------------
-      ble.onWrite = function (uuid) {
-        document.getElementById("uuid_name").innerHTML = uuid;
-        document.getElementById("status").innerHTML = "written data";
-      };
-
       //-------------------------------------------------
       //ボタンが押された時のイベント登録
       //--------------------------------------------------
-      document.getElementById("write").addEventListener("click", function () {
-        //フォーマットに従って値を変換
-        const textEncoder = new TextEncoder();
-        const text_data = document.getElementById("write_value").value;
-        const text_data_encoded = textEncoder.encode(text_data + "\n");
+      document.getElementById("scan").addEventListener("click", function () {
+        ble.scan("UUID1");
+      });
 
-        //write
-        ble.write("UUID1", text_data_encoded);
+      document.getElementById("connect").addEventListener("click", function () {
+        ble.connectGATT("UUID1");
       });
     </script>
   </body>
