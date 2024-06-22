@@ -56,15 +56,21 @@ Copyright 2017-2020 JellyWare Inc. All Rights Reserved.
       //--------------------------------------------------
       //ロード時の処理
       //--------------------------------------------------
-      window.onload = function () {
-        //UUIDの設定
-        blueJelly.setUUID(
-          "RX",
-          "6E400001-B5A3-F393-E0A9-E50E24DCCA9E",
-          "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
-        );
-      };
+      function initializeBlueJelly() {
+        if (typeof BlueJelly === "undefined") {
+          // If BlueJelly is not loaded yet, retry after a short delay
+          setTimeout(initializeBlueJelly, 100);
+        } else {
+          //UUIDの設定
+          ble.setUUID(
+            "RX",
+            "6E400001-B5A3-F393-E0A9-E50E24DCCA9E",
+            "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
+          );
+        }
+      }
 
+      window.onload = initializeBlueJelly;
       //--------------------------------------------------
       //Scan後の処理
       //--------------------------------------------------
