@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { connect, connectGatt, scan, write } from "./bluejelly"; // Ensure this path is correct
+import useGeolocation from "./useGeolocation";
 
 export default function Home() {
   //Initialize device information
@@ -20,8 +21,14 @@ export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [isWriting, setIsWriting] = useState(false);
 
+  const location = useGeolocation();
+  console.log(location);
+
   return (
     <>
+      <h1>GPS</h1>
+      <p>{`lat: ${location.lat}`}</p>
+      <p>{`long: ${location.long}`}</p>
       <h1>{isConnected ? "connected" : "not connected"}</h1>
       <button
         onClick={async () => {
