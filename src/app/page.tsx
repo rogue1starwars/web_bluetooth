@@ -26,6 +26,9 @@ export default function Home() {
 
   return (
     <>
+      <h1>GPS</h1>
+      <p>{`lat: ${location.lat}`}</p>
+      <p>{`long: ${location.long}`}</p>
       <h1>{isConnected ? "connected" : "not connected"}</h1>
       <button
         onClick={async () => {
