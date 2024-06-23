@@ -7,21 +7,19 @@ import useGeolocation from "./useGeolocation";
 import { useBluetoothConnection } from "./useBluetoothConnection";
 
 export default function Home() {
-  //Initialize device information
-
+  // Using the custom hook to get the location
   const location = useGeolocation();
   console.log(location);
 
+  // Using the custom hook to get the device connection
   const { deviceInfo, isConnected, handleConnect } = useBluetoothConnection();
 
-  const [isWriting, setIsWriting] = useState(false);
-
+  // Function to write data to the device. Called when the "write" button is clicked
   async function handleWrite() {
-    setIsWriting(true);
     await write({ deviceInfo, data: writeValue });
-    setIsWriting(false);
   }
 
+  // State to store the value to be written to the device
   const [writeValue, setWriteValue] = useState("");
 
   return (
