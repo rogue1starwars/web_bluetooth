@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--
+Copyright 2017-2020 JellyWare Inc. All Rights Reserved.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="BlueJelly" />
+    <meta
+      name="viewport"
+      content="width=640, maximum-scale=1.0, user-scalable=yes"
+    />
+    <title>BlueJelly</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="bluejelly.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="title margin">
+        <p id="title">BlueJelly Sample</p>
+        <p id="subtitle">WriteでUART送信</p>
+      </div>
+
+      <div class="contents margin">
+        <input id="write_value" class="button" value="up" size="20" />
+        <button id="write" class="button">Write</button>
+        <hr />
+        <div id="device_name"></div>
+        <div id="uuid_name"></div>
+        <div id="status"></div>
+      </div>
+      <div class="footer margin">
+        For more information, see
+        <a href="https://jellyware.jp/kurage" target="_blank">jellyware.jp</a>
+        and
+        <a href="https://github.com/electricbaka/bluejelly" target="_blank"
+          >GitHub</a
+        >
+        !
+      </div>
+    </div>
+    <script>
+      //--------------------------------------------------
+      //Global変数
+      //--------------------------------------------------
+      //BlueJellyのインスタンス生成
+      const ble = new BlueJelly();
+
+      //--------------------------------------------------
+      //ロード時の処理
+      //--------------------------------------------------
+      function initializeBlueJelly() {
+        if (typeof BlueJelly === "undefined") {
+          // If BlueJelly is not loaded yet, retry after a short delay
+          setTimeout(initializeBlueJelly, 100);
+        } else {
+          //UUIDの設定
+          ble.setUUID(
+            "RX",
+            "6e400001-b5a3-f393-e0a9-e50e24dcca9e",
+            "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+          );
+        }
+      }
+
+      window.onload = initializeBlueJelly;
+      //--------------------------------------------------
+      //Scan後の処理
+      //--------------------------------------------------
+      ble.onScan = function (deviceName) {
+        document.getElementById("device_name").innerHTML = deviceName;
+        document.getElementById("status").innerHTML = "found device!";
+      };
+
+      //--------------------------------------------------
+      //ConnectGATT後の処理
+      //--------------------------------------------------
+      ble.onConnectGATT = function (uuid) {
+        console.log("> connected GATT!");
+
+        document.getElementById("uuid_name").innerHTML = uuid;
+        document.getElementById("status").innerHTML = "connected GATT!";
+      };
+
+      //--------------------------------------------------
+      //Write後の処理
+      //--------------------------------------------------
+      ble.onWrite = function (uuid) {
+        document.getElementById("uuid_name").innerHTML = uuid;
+        document.getElementById("status").innerHTML = "written data";
+      };
+
+      //-------------------------------------------------
+      //ボタンが押された時のイベント登録
+      //--------------------------------------------------
+      document.getElementById("write").addEventListener("click", function () {
+        //フォーマットに従って値を変換
+        const textEncoder = new TextEncoder();
+        const text_data = document.getElementById("write_value").value;
+        const text_data_encoded = textEncoder.encode(text_data + "\n");
+
+        //write
+        ble.write("RX", text_data_encoded);
+      });
+    </script>
+  </body>
+</html>
