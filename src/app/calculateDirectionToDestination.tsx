@@ -12,12 +12,12 @@ export default function calculateDirectionToDestination({
   if (destination.lat === null || destination.long === null) return null;
 
   // Calculate the direction to the destination
-  const directionInCounterClock = Math.atan2(
+  const directionInradian = Math.atan2(
     destination.long - location.long,
     destination.lat - location.lat
   );
 
   // Convert the direction to degrees
-  const direction = convertTo0to360Range((directionInCounterClock - 90) * -1);
+  const direction = convertTo0to360Range((directionInradian * 180) / Math.PI);
   return direction;
 }

@@ -81,7 +81,7 @@ export default function Home() {
   useEffect(() => {
     const intervalId = setInterval(sendCommand, 100);
     return () => clearInterval(intervalId);
-  }, [isConnected, destination, location]);
+  }, [destination, location, orientation]);
 
   return (
     <>
