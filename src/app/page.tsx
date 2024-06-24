@@ -29,6 +29,21 @@ export default function Home() {
     commandNumber: "0",
   });
 
+  const [destination, setDestination] = useState({
+    lat: 0,
+    long: 0,
+  });
+
+  function handleDestinationInput({ e, key }: { e: any; key: string }) {
+    const value = e.target.value;
+    // Check if the value is a valid floating-point number or empty (to allow clearing the input)
+    if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
+      setDestination({ ...destination, [key]: value });
+    } else {
+      alert("Please enter a valid number");
+    }
+  }
+
   // Function to send command to the device
   async function sendCommand() {
     const directionToDestination = calculateDirectionToDestination({
@@ -66,22 +81,7 @@ export default function Home() {
   useEffect(() => {
     const intervalId = setInterval(sendCommand, 100);
     return () => clearInterval(intervalId);
-  }, [isConnected]);
-
-  const [destination, setDestination] = useState({
-    lat: 0,
-    long: 0,
-  });
-
-  function handleDestinationInput({ e, key }: { e: any; key: string }) {
-    const value = e.target.value;
-    // Check if the value is a valid floating-point number or empty (to allow clearing the input)
-    if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
-      setDestination({ ...destination, [key]: value });
-    } else {
-      alert("Please enter a valid number");
-    }
-  }
+  }, [isConnected, destination, location]);
 
   return (
     <>
