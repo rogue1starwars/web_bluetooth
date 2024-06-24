@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { connect, write } from "./bluejelly"; // Ensure this path is correct
 import useGeolocation from "./useGeolocation";
 import { useBluetoothConnection } from "./useBluetoothConnection";
+import useDeviceOrientation from "./useDeviceOrientation";
 
 export default function Home() {
   // Using the custom hook to get the location
@@ -22,27 +23,7 @@ export default function Home() {
   // State to store the value to be written to the device
   const [writeValue, setWriteValue] = useState("");
 
-  const [orientation, setOrientation] = useState({
-    alpha: null as number | null,
-    beta: null as number | null,
-    gamma: null as number | null,
-  });
-
-  function handleOrientation(event: DeviceOrientationEvent) {
-    console.log(event.alpha, event.beta, event.gamma);
-    setOrientation({
-      alpha: event.alpha,
-      beta: event.beta,
-      gamma: event.gamma,
-    });
-  }
-  useEffect(() => {
-    window.addEventListener(
-      "deviceorientationabsolute",
-      handleOrientation,
-      true
-    );
-  });
+  const orientation = useDeviceOrientation();
 
   return (
     <>
