@@ -22,6 +22,24 @@ export default function Home() {
   // State to store the value to be written to the device
   const [writeValue, setWriteValue] = useState("");
 
+  const [orientation, setOrientation] = useState({
+    alpha: null as number | null,
+    beta: null as number | null,
+    gamma: null as number | null,
+  });
+
+  function handleOrientation(event: DeviceOrientationEvent) {
+    console.log(event.alpha, event.beta, event.gamma);
+    setOrientation({
+      alpha: event.alpha,
+      beta: event.beta,
+      gamma: event.gamma,
+    });
+  }
+  useEffect(() => {
+    window.addEventListener("deviceorientation", handleOrientation, true);
+  });
+
   return (
     <>
       <h1>GPS</h1>
@@ -41,6 +59,10 @@ export default function Home() {
       >
         write
       </button>
+      <h1>Orientation</h1>
+      <p>{`alpha: ${orientation.alpha}`}</p>
+      <p>{`beta: ${orientation.beta}`}</p>
+      <p>{`gamma: ${orientation.gamma}`}</p>
     </>
   );
 }
