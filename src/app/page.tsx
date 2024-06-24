@@ -21,6 +21,15 @@ export default function Home() {
   const orientation = useDeviceOrientation();
   // State to store the value to be written to the device
   const [writeValue, setWriteValue] = useState("0");
+
+  const [log, setLog] = useState({
+    directionToDestination: 0,
+    currentDirection: 0,
+    directionDifference: 0,
+    commandNumber: "0",
+  });
+
+  // Function to send command to the device
   async function sendCommand() {
     const directionToDestination = calculateDirectionToDestination({
       location,
@@ -44,6 +53,12 @@ export default function Home() {
       commandNumber = "3"; // Command for direction adjustment
     }
 
+    setLog({
+      directionToDestination,
+      currentDirection,
+      directionDifference,
+      commandNumber,
+    });
     setWriteValue(commandNumber);
     await write({ deviceInfo, data: commandNumber });
     return;
@@ -96,6 +111,12 @@ export default function Home() {
       <p>{`alpha: ${orientation.alpha}`}</p>
       <p>{`beta: ${orientation.beta}`}</p>
       <p>{`gamma: ${orientation.gamma}`}</p>
+      <br />
+      <h1>Log</h1>
+      <p>{`Direction to destination: ${log.directionToDestination}`}</p>
+      <p>{`Current direction: ${log.currentDirection}`}</p>
+      <p>{`Direction difference: ${log.directionDifference}`}</p>
+      <p>{`Command number: ${log.commandNumber}`}</p>
     </>
   );
 }
