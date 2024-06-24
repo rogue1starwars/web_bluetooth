@@ -37,7 +37,11 @@ export default function Home() {
     });
   }
   useEffect(() => {
-    window.addEventListener("deviceorientation", handleOrientation, true);
+    window.addEventListener(
+      "deviceorientationabsolute",
+      handleOrientation,
+      true
+    );
   });
 
   return (
