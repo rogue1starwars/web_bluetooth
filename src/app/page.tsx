@@ -101,7 +101,7 @@ export default function Home() {
       return () => clearInterval(intervalId);
     },
     sendCommand,
-    [destination, location]
+    []
   );
 
   return (
