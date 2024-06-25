@@ -156,6 +156,9 @@ export default function Home() {
       <p>{`Current direction: ${log2.currentDirection}`}</p>
       <p>{`Direction difference: ${log2.directionDifference}`}</p>
       <p>{`Command number: ${log2.commandNumber}`}</p>
+      <p>{`Device error: ${log2.error.device}`}</p>
+      <p>{`GPS error: ${log2.error.gps}`}</p>
+      <p>{`Orientation error: ${log2.error.orientation}`}</p>
     </>
   );
 }

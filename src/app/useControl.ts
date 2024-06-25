@@ -15,11 +15,26 @@ export default function useControl({
   destination: { lat: number | null; long: number | null };
   isConnected: boolean;
 }) {
-  const [log, setLog] = useState({
+  const [log, setLog] = useState<{
+    directionToDestination: number;
+    currentDirection: number;
+    directionDifference: number;
+    commandNumber: string;
+    error: {
+      device: string;
+      gps: string;
+      orientation: string;
+    };
+  }>({
     directionToDestination: 0,
     currentDirection: 0,
     directionDifference: 0,
     commandNumber: "0",
+    error: {
+      device: "",
+      gps: "",
+      orientation: "",
+    },
   });
 
   useEffect(() => {
@@ -32,7 +47,6 @@ export default function useControl({
     function handleOrientation(event: DeviceOrientationEvent) {
       console.log(event.alpha, event.beta, event.gamma);
       if (event.alpha === null || event.beta === null || event.gamma === null) {
-        alert("Device Orientation is not valid");
         return;
       }
       orientation = {
@@ -88,7 +102,14 @@ export default function useControl({
     async function sendCommand() {
       // Return when device is not connected
       if (isConnected === false) {
-        alert("Device is not connected");
+        setLog({
+          ...log,
+          error: {
+            ...log.error,
+            device: "Device is not connected",
+          },
+        });
+
         return;
       }
 
@@ -99,12 +120,23 @@ export default function useControl({
       const currentDirection = orientation.alpha;
 
       if (directionToDestination === null) {
-        alert("GPS location or Destinagion is not valid");
+        setLog({
+          ...log,
+          error: {
+            ...log.error,
+            gps: "GPS is not available",
+          },
+        });
         return;
       }
-
       if (currentDirection === null) {
-        alert("Device Orientation is not valid");
+        setLog({
+          ...log,
+          error: {
+            ...log.error,
+            orientation: "Orientation is not available",
+          },
+        });
         return;
       }
 
@@ -124,6 +156,7 @@ export default function useControl({
       await write({ deviceInfo, data: commandNumber });
       // Log the command
       setLog({
+        ...log,
         directionToDestination,
         currentDirection,
         directionDifference,
