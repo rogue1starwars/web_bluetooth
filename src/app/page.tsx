@@ -9,6 +9,7 @@ import useDeviceOrientation from "./useDeviceOrientation";
 import { convertTo0to360Range } from "@/lib/orientation";
 import { comma } from "postcss/lib/list";
 import calculateDirectionToDestination from "./calculateDirectionToDestination";
+import useControl from "./useControl";
 
 export default function Home() {
   // Using the custom hook to get the location
@@ -109,7 +110,18 @@ export default function Home() {
     const intervalId = setInterval(sendCommand, 100);
     return () => clearInterval(intervalId);
   }, [orientation, location, destination]);
-  
+
+  useEffect(() => {
+    let i = 0;
+    const intervalId = setInterval(() => {
+      console.log(i);
+      i++;
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const log2 = useControl({ deviceInfo, destination, isConnected });
+
   return (
     <>
       <h1>GPS</h1>
@@ -140,10 +152,10 @@ export default function Home() {
       <p>{`gamma: ${orientation.gamma}`}</p>
       <br />
       <h1>Log</h1>
-      <p>{`Direction to destination: ${log.directionToDestination}`}</p>
-      <p>{`Current direction: ${log.currentDirection}`}</p>
-      <p>{`Direction difference: ${log.directionDifference}`}</p>
-      <p>{`Command number: ${log.commandNumber}`}</p>
+      <p>{`Direction to destination: ${log2.directionToDestination}`}</p>
+      <p>{`Current direction: ${log2.currentDirection}`}</p>
+      <p>{`Direction difference: ${log2.directionDifference}`}</p>
+      <p>{`Command number: ${log2.commandNumber}`}</p>
     </>
   );
 }
