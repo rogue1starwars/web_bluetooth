@@ -27,6 +27,6 @@ export default function useDeviceOrientation() {
       handleOrientation,
       true
     );
-  });
+  }, []);
   return orientation;
 }
