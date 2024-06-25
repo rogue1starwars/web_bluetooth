@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { connect, write } from "./bluejelly"; // Ensure this path is correct
 import useGeolocation from "./useGeolocation";
 import { useBluetoothConnection } from "./useBluetoothConnection";
@@ -44,6 +44,23 @@ export default function Home() {
     }
   }
 
+  function useValueRef<T>(val: T) {
+    const ref = useRef(val);
+    useEffect(() => {
+      ref.current = val;
+    }, [val]);
+    return ref;
+  }
+
+  function useEffectRef<T>(
+    effect: (ref: React.MutableRefObject<T>) => void | (() => void | undefined),
+    val: T,
+    deps?: React.DependencyList
+  ) {
+    const ref = useValueRef(val);
+    useEffect(() => effect(ref), deps);
+  }
+
   // Function to send command to the device
   async function sendCommand() {
     const directionToDestination = calculateDirectionToDestination({
@@ -78,10 +95,14 @@ export default function Home() {
     await write({ deviceInfo, data: commandNumber });
     return;
   }
-  useEffect(() => {
-    const intervalId = setInterval(sendCommand, 100);
-    return () => clearInterval(intervalId);
-  }, [destination, location]);
+  useEffectRef(
+    (f) => {
+      const intervalId = setInterval(() => f.current(), 100);
+      return () => clearInterval(intervalId);
+    },
+    sendCommand,
+    [destination, location]
+  );
 
   return (
     <>
