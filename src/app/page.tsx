@@ -95,15 +95,21 @@ export default function Home() {
     await write({ deviceInfo, data: commandNumber });
     return;
   }
-  useEffectRef(
-    (f) => {
-      const intervalId = setInterval(() => f.current(), 100);
-      return () => clearInterval(intervalId);
-    },
-    sendCommand,
-    []
-  );
 
+  // useEffectRef(
+  //   (f) => {
+  //     const intervalId = setInterval(() => f.current(), 100);
+  //     return () => clearInterval(intervalId);
+  //   },
+  //   sendCommand,
+  //   []
+  // );
+
+  useEffect(() => {
+    const intervalId = setInterval(sendCommand, 100);
+    return () => clearInterval(intervalId);
+  }, [orientation, location, destination]);
+  
   return (
     <>
       <h1>GPS</h1>
