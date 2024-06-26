@@ -47,6 +47,7 @@ export default function useControl({
       beta: null as number | null,
       gamma: null as number | null,
     };
+
     function handleOrientation(event: DeviceOrientationEvent) {
       console.log(event.alpha, event.beta, event.gamma);
       if (event.alpha === null || event.beta === null || event.gamma === null) {
@@ -89,18 +90,39 @@ export default function useControl({
             lat: position.coords.latitude,
             long: position.coords.longitude,
           };
+
+          setLog((prevLog) => ({
+            ...prevLog,
+            currentLocation: location,
+            error: {
+              ...prevLog.error,
+              gps: "",
+            },
+          }));
         },
         (error) => {
-          alert("Geolocation Error:" + error);
+          console.error("Geolocation Error:", error);
+          setLog((prevLog) => ({
+            ...prevLog,
+            error: {
+              ...prevLog.error,
+              gps: "Geolocation Error: " + error.message,
+            },
+          }));
         },
         options
       );
     } else {
       alert("Geolocation Not Available");
-      // Optionally handle the case where geolocation is not available
+      setLog((prevLog) => ({
+        ...prevLog,
+        error: {
+          ...prevLog.error,
+          gps: "Geolocation Not Available",
+        },
+      }));
     }
 
-    //
     // Function to send command to the device
     async function sendCommand() {
       const directionToDestination = calculateDirectionToDestination({
@@ -111,23 +133,23 @@ export default function useControl({
       const currentLocation = location;
 
       if (directionToDestination === null) {
-        setLog({
-          ...log,
+        setLog((prevLog) => ({
+          ...prevLog,
           error: {
-            ...log.error,
+            ...prevLog.error,
             gps: "GPS is not available",
           },
-        });
+        }));
         return;
       }
       if (currentDirection === null) {
-        setLog({
-          ...log,
+        setLog((prevLog) => ({
+          ...prevLog,
           error: {
-            ...log.error,
+            ...prevLog.error,
             orientation: "Orientation is not available",
           },
-        });
+        }));
         return;
       }
 
@@ -144,25 +166,29 @@ export default function useControl({
       }
 
       // Log the command
-      setLog({
-        ...log,
+      setLog((prevLog) => ({
+        ...prevLog,
         directionToDestination,
         currentDirection,
         currentLocation,
         directionDifference,
         commandNumber,
-      });
+        error: {
+          ...prevLog.error,
+          gps: "",
+          orientation: "",
+        },
+      }));
 
       // Return when device is not connected
       if (isConnected === false) {
-        setLog({
-          ...log,
+        setLog((prevLog) => ({
+          ...prevLog,
           error: {
-            ...log.error,
+            ...prevLog.error,
             device: "Device is not connected",
           },
-        });
-
+        }));
         return;
       }
 
@@ -179,7 +205,9 @@ export default function useControl({
         navigator.geolocation.clearWatch(watchId);
       }
       clearInterval(intervalId);
+      window.removeEventListener("deviceorientationabsolute", handleOrientation);
     };
-  }, [deviceInfo, destination]);
+  }, [deviceInfo, destination, isConnected]);
+
   return log;
 }
