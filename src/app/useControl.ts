@@ -18,8 +18,10 @@ export default function useControl({
   const [log, setLog] = useState<{
     directionToDestination: number;
     currentDirection: number;
+    currentLocation: { lat: number | null; long: number | null };
     directionDifference: number;
     commandNumber: string;
+
     error: {
       device: string;
       gps: string;
@@ -28,6 +30,7 @@ export default function useControl({
   }>({
     directionToDestination: 0,
     currentDirection: 0,
+    currentLocation: { lat: null, long: null },
     directionDifference: 0,
     commandNumber: "0",
     error: {
@@ -100,24 +103,12 @@ export default function useControl({
     //
     // Function to send command to the device
     async function sendCommand() {
-      // Return when device is not connected
-      if (isConnected === false) {
-        setLog({
-          ...log,
-          error: {
-            ...log.error,
-            device: "Device is not connected",
-          },
-        });
-
-        return;
-      }
-
       const directionToDestination = calculateDirectionToDestination({
         location,
         destination,
       });
       const currentDirection = orientation.alpha;
+      const currentLocation = location;
 
       if (directionToDestination === null) {
         setLog({
@@ -152,16 +143,31 @@ export default function useControl({
         commandNumber = "3";
       }
 
-      // Write the command to the device
-      await write({ deviceInfo, data: commandNumber });
       // Log the command
       setLog({
         ...log,
         directionToDestination,
         currentDirection,
+        currentLocation,
         directionDifference,
         commandNumber,
       });
+
+      // Return when device is not connected
+      if (isConnected === false) {
+        setLog({
+          ...log,
+          error: {
+            ...log.error,
+            device: "Device is not connected",
+          },
+        });
+
+        return;
+      }
+
+      // Write the command to the device
+      await write({ deviceInfo, data: commandNumber });
     }
 
     // Set interval to send command
