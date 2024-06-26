@@ -16,10 +16,10 @@ export default function useControl({
   isConnected: boolean;
 }) {
   const [log, setLog] = useState<{
-    directionToDestination: number;
+    directionToDestination: number | null;
     currentDirection: number;
     currentLocation: { lat: number | null; long: number | null };
-    directionDifference: number;
+    directionDifference: number | null;
     commandNumber: string;
 
     error: {
@@ -28,10 +28,10 @@ export default function useControl({
       orientation: string;
     };
   }>({
-    directionToDestination: 0,
+    directionToDestination: null,
     currentDirection: 0,
     currentLocation: { lat: null, long: null },
-    directionDifference: 0,
+    directionDifference: null,
     commandNumber: "0",
     error: {
       device: "",
@@ -71,6 +71,9 @@ export default function useControl({
       long: null as number | null,
     };
 
+    let directionToDestination = null as number | null;
+    let directionDifference = null as number | null;
+
     let watchId: number;
     if ("geolocation" in navigator) {
       console.log("Geolocation Available");
@@ -99,6 +102,13 @@ export default function useControl({
               gps: "",
             },
           }));
+
+          directionToDestination = calculateDirectionToDestination({
+            location,
+            destination,
+          });
+          if (orientation.alpha !== null && directionToDestination !== null)
+            directionDifference = directionToDestination - orientation.alpha;
         },
         (error) => {
           console.error("Geolocation Error:", error);
@@ -125,10 +135,6 @@ export default function useControl({
 
     // Function to send command to the device
     async function sendCommand() {
-      const directionToDestination = calculateDirectionToDestination({
-        location,
-        destination,
-      });
       const currentDirection = orientation.alpha;
       const currentLocation = location;
 
@@ -152,8 +158,9 @@ export default function useControl({
         }));
         return;
       }
+      if (directionDifference === null) return;
 
-      const directionDifference = directionToDestination - currentDirection;
+      // const directionDifference = directionToDestination - currentDirection;
 
       let commandNumber = "0"; // Default command
 
@@ -205,7 +212,10 @@ export default function useControl({
         navigator.geolocation.clearWatch(watchId);
       }
       clearInterval(intervalId);
-      window.removeEventListener("deviceorientationabsolute", handleOrientation);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        handleOrientation
+      );
     };
   }, [deviceInfo, destination, isConnected]);
 
