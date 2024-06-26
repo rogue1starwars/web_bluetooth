@@ -107,8 +107,6 @@ export default function useControl({
             location,
             destination,
           });
-          if (orientation.alpha !== null && directionToDestination !== null)
-            directionDifference = directionToDestination - orientation.alpha;
         },
         (error) => {
           console.error("Geolocation Error:", error);
@@ -158,9 +156,8 @@ export default function useControl({
         }));
         return;
       }
-      if (directionDifference === null) return;
 
-      // const directionDifference = directionToDestination - currentDirection;
+      const directionDifference = directionToDestination - currentDirection;
 
       let commandNumber = "0"; // Default command
 
