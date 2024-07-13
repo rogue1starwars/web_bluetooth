@@ -36,7 +36,8 @@ export default function Home() {
       destination,
     });
     const currentDirection = orientation.alpha;
-
+    
+    // If the location or destination is not available, return null
     if (directionToDestination === null || currentDirection === null) {
       return;
     }
